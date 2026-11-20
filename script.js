@@ -240,7 +240,7 @@
   }
 
   /* ---------------------------------------------------------
-     5. Komponen daftar kegiatan
+     5. Komponen daftar catatan
      --------------------------------------------------------- */
   function actionButton(action, id, label, iconName, extraClass) {
     const b = el('button', `btn btn-sm ${extraClass}`);
@@ -323,7 +323,7 @@
     $('#statDone').textContent = done;
     $('#statPending').textContent = todays.length - done;
 
-    // Kegiatan berikutnya
+    // Catatan berikutnya
     const box = $('#nextEvent');
     box.replaceChildren();
     const next = state.events
@@ -331,7 +331,7 @@
       .sort(byTime)[0];
 
     if (!next) {
-      box.append(el('div', 'empty', 'Tidak ada kegiatan berikutnya.'));
+      box.append(el('div', 'empty', 'Tidak ada catatan berikutnya.'));
     } else {
       let label;
       const diff = dayDiff(today, next.date);
@@ -350,8 +350,8 @@
       box.append(buildEventItem(next, { showDate: true }));
     }
 
-    const empty = el('div', 'empty', 'Belum ada kegiatan hari ini.');
-    fillList($('#todayList'), todays, 'Belum ada kegiatan hari ini.', {});
+    const empty = el('div', 'empty', 'Belum ada catatan hari ini.');
+    fillList($('#todayList'), todays, 'Belum ada catatan hari ini.', {});
     void empty;
   }
 
@@ -361,7 +361,7 @@
   function buildTabs() {
     const tabs = $('#calTabs');
     tabs.replaceChildren();
-    const items = [{ id: 'semua', name: 'Semua Kegiatan' }, ...CATEGORIES];
+    const items = [{ id: 'semua', name: 'Semua Catatan' }, ...CATEGORIES];
     items.forEach((c) => {
       const b = el('button', 'tab');
       b.type = 'button';
@@ -397,7 +397,7 @@
     $('#badgeMonth').textContent = MONTHS[now.getMonth()].slice(0, 3).toUpperCase();
     $('#badgeDay').textContent = now.getDate();
 
-    // Kelompokkan kegiatan per tanggal (sesuai filter kategori)
+    // Kelompokkan catatan per tanggal (sesuai filter kategori)
     const map = new Map();
     state.events.forEach((ev) => {
       if (state.calFilter !== 'semua' && ev.category !== state.calFilter) return;
@@ -421,12 +421,12 @@
       cell.dataset.date = key;
       cell.tabIndex = 0;
       cell.setAttribute('role', 'gridcell');
-      cell.setAttribute('aria-label', `${formatLong(key)}${key === today ? ' (hari ini)' : ''}, ${list.length} kegiatan`);
+      cell.setAttribute('aria-label', `${formatLong(key)}${key === today ? ' (hari ini)' : ''}, ${list.length} catatan`);
 
       const numText = outside && d.getDate() === 1 ? `1 ${MONTHS[d.getMonth()].slice(0, 3)}` : String(d.getDate());
       cell.append(el('span', 'cell-num', numText));
 
-      // Tampilan desktop: kotak kegiatan
+      // Tampilan desktop: kotak catatan
       list.slice(0, MAX_PILLS).forEach((ev) => {
         const pill = el('div', 'pill' + (ev.done ? ' is-done' : ''));
         pill.style.setProperty('--rgb', getCat(ev.category).rgb);
@@ -469,7 +469,7 @@
   }
 
   /* ---------------------------------------------------------
-     8. Modal kegiatan pada tanggal
+     8. Modal catatan pada tanggal
      --------------------------------------------------------- */
   function renderDay() {
     const key = state.dayKey;
@@ -478,9 +478,9 @@
     const done = list.filter((e) => e.done).length;
     $('#dayTitle').textContent = formatLong(key);
     $('#daySub').textContent = list.length
-      ? `${formatDMY(key)} · ${list.length} kegiatan · ${done} selesai`
-      : `${formatDMY(key)} · Belum ada kegiatan`;
-    fillList($('#dayList'), list, 'Belum ada kegiatan pada tanggal ini.', {});
+      ? `${formatDMY(key)} · ${list.length} catatan · ${done} selesai`
+      : `${formatDMY(key)} · Belum ada catatan`;
+    fillList($('#dayList'), list, 'Belum ada catatan pada tanggal ini.', {});
   }
 
   function openDay(key) {
@@ -512,9 +512,9 @@
     const results = searchEvents();
     const filtering = $('#sQuery').value.trim() || $('#sCategory').value || $('#sDate').value || $('#sStatus').value;
     $('#sCount').textContent = results.length
-      ? `${results.length} kegiatan ditemukan`
-      : (filtering ? 'Tidak ada kegiatan yang cocok.' : 'Belum ada kegiatan tersimpan.');
-    fillList($('#sResults'), results, filtering ? 'Tidak ada kegiatan yang cocok dengan pencarian Anda.' : 'Belum ada kegiatan tersimpan.', { showDate: true });
+      ? `${results.length} catatan ditemukan`
+      : (filtering ? 'Tidak ada catatan yang cocok.' : 'Belum ada catatan tersimpan.');
+    fillList($('#sResults'), results, filtering ? 'Tidak ada catatan yang cocok dengan pencarian Anda.' : 'Belum ada catatan tersimpan.', { showDate: true });
   }
 
   function openSearch() {
@@ -532,7 +532,7 @@
   }
 
   /* ---------------------------------------------------------
-     10. Formulir tambah / ubah kegiatan
+     10. Formulir tambah / ubah catatan
      --------------------------------------------------------- */
   const FIELD_IDS = { title: 'fTitle', date: 'fDate', start: 'fStart', end: 'fEnd', desc: 'fDesc' };
 
@@ -596,10 +596,10 @@
     const errors = {};
     const timeHint = 'Gunakan format 24 jam HH:MM (contoh: 08:30).';
 
-    if (!data.title) errors.title = 'Nama kegiatan wajib diisi.';
-    else if (data.title.length > 100) errors.title = 'Nama kegiatan maksimal 100 karakter.';
+    if (!data.title) errors.title = 'Nama catatan wajib diisi.';
+    else if (data.title.length > 100) errors.title = 'Nama catatan maksimal 100 karakter.';
 
-    if (!data.date) errors.date = 'Tanggal kegiatan wajib diisi.';
+    if (!data.date) errors.date = 'Tanggal catatan wajib diisi.';
     else if (!isValidDateKey(data.date)) errors.date = 'Tanggal tidak valid (tahun 1900–2100).';
 
     if (!data.start) errors.start = 'Jam mulai wajib diisi.';
@@ -619,7 +619,7 @@
     const ev = opts.id ? findEvent(opts.id) : null;
     state.editingId = ev ? ev.id : null;
 
-    $('#formTitle').textContent = ev ? 'Ubah Kegiatan' : 'Tambah Kegiatan';
+    $('#formTitle').textContent = ev ? 'Ubah Catatan' : 'Tambah Catatan';
     $('#fTitle').value = ev ? ev.title : '';
     $('#fDate').value = ev ? ev.date : (isValidDateKey(opts.date) ? opts.date : todayKey());
     $('#fStart').value = ev ? ev.start : '';
@@ -647,10 +647,10 @@
     if (state.editingId) {
       const ev = findEvent(state.editingId);
       if (ev) Object.assign(ev, data);
-      message = 'Kegiatan berhasil diperbarui.';
+      message = 'Catatan berhasil diperbarui.';
     } else {
       state.events.push({ id: generateId(), ...data, done: false, createdAt: Date.now() });
-      message = 'Kegiatan berhasil disimpan.';
+      message = 'Catatan berhasil disimpan.';
     }
 
     saveEvents();
@@ -664,7 +664,7 @@
   }
 
   /* ---------------------------------------------------------
-     11. Aksi kegiatan (ubah status, hapus)
+     11. Aksi catatan (ubah status, hapus)
      --------------------------------------------------------- */
   function toggleDone(id) {
     const ev = findEvent(id);
@@ -672,15 +672,15 @@
     ev.done = !ev.done;
     saveEvents();
     renderAll();
-    toast(ev.done ? 'Kegiatan ditandai selesai.' : 'Kegiatan ditandai belum selesai.', 'info');
+    toast(ev.done ? 'Catatan ditandai selesai.' : 'Catatan ditandai belum selesai.', 'info');
   }
 
   async function deleteEvent(id) {
     const ev = findEvent(id);
     if (!ev) return;
     const choice = await askChoice({
-      title: 'Hapus kegiatan?',
-      message: `Kegiatan "${ev.title}" pada ${formatDMY(ev.date)} akan dihapus secara permanen.`,
+      title: 'Hapus catatan?',
+      message: `Catatan "${ev.title}" pada ${formatDMY(ev.date)} akan dihapus secara permanen.`,
       buttons: [
         { label: 'Batal', value: null, variant: 'ghost' },
         { label: 'Hapus', value: 'hapus', variant: 'danger' }
@@ -690,7 +690,7 @@
     state.events = state.events.filter((e) => e.id !== id);
     saveEvents();
     renderAll();
-    toast('Kegiatan berhasil dihapus.');
+    toast('Catatan berhasil dihapus.');
   }
 
   /* ---------------------------------------------------------
@@ -706,7 +706,7 @@
 
   function backupData() {
     if (!state.events.length) {
-      toast('Belum ada kegiatan untuk dicadangkan.', 'info');
+      toast('Belum ada catatan untuk dicadangkan.', 'info');
       return;
     }
     const payload = {
@@ -714,7 +714,7 @@
       pengguna: 'Reza Alfiandy',
       versi: 1,
       diekspor: new Date().toISOString(),
-      kegiatan: state.events
+      catatan: state.events
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -725,7 +725,7 @@
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
-    toast(`Cadangan diunduh (${state.events.length} kegiatan).`);
+    toast(`Cadangan diunduh (${state.events.length} catatan).`);
   }
 
   async function restoreData(file) {
@@ -744,7 +744,7 @@
       return;
     }
 
-    const list = Array.isArray(json) ? json : (json && Array.isArray(json.kegiatan) ? json.kegiatan : null);
+    const list = Array.isArray(json) ? json : (json && Array.isArray(json.catatan) ? json.catatan : (json && Array.isArray(json.kegiatan) ? json.kegiatan : null));
     if (!list) { toast('Struktur file tidak sesuai. Gunakan file cadangan dari aplikasi ini.', 'error'); return; }
 
     const valid = [];
@@ -756,11 +756,11 @@
       seen.add(ev.id);
       valid.push(ev);
     });
-    if (!valid.length) { toast('Tidak ada kegiatan yang valid di dalam file.', 'error'); return; }
+    if (!valid.length) { toast('Tidak ada catatan yang valid di dalam file.', 'error'); return; }
 
     const choice = await askChoice({
-      title: 'Pulihkan data kegiatan?',
-      message: `File berisi ${valid.length} kegiatan valid${skipped ? ` (${skipped} data dilewati karena tidak valid)` : ''}. Saat ini tersimpan ${state.events.length} kegiatan. "Gabungkan" menambahkan ke data yang ada, sedangkan "Ganti Semua" menimpa seluruh data saat ini.`,
+      title: 'Pulihkan data catatan?',
+      message: `File berisi ${valid.length} catatan valid${skipped ? ` (${skipped} data dilewati karena tidak valid)` : ''}. Saat ini tersimpan ${state.events.length} catatan. "Gabungkan" menambahkan ke data yang ada, sedangkan "Ganti Semua" menimpa seluruh data saat ini.`,
       buttons: [
         { label: 'Batal', value: null, variant: 'ghost' },
         { label: 'Gabungkan', value: 'gabung', variant: 'primary' },
@@ -771,7 +771,7 @@
 
     if (choice === 'ganti') {
       state.events = valid;
-      toast(`Data diganti dengan ${valid.length} kegiatan dari file.`);
+      toast(`Data diganti dengan ${valid.length} catatan dari file.`);
     } else {
       let added = 0, updated = 0;
       valid.forEach((ev) => {
@@ -788,7 +788,7 @@
     if (!state.events.length) { toast('Tidak ada data untuk dihapus.', 'info'); return; }
     const choice = await askChoice({
       title: 'Hapus semua data?',
-      message: `Seluruh ${state.events.length} kegiatan akan dihapus permanen dari peramban ini dan tidak dapat dikembalikan, kecuali Anda punya file cadangan.`,
+      message: `Seluruh ${state.events.length} catatan akan dihapus permanen dari peramban ini dan tidak dapat dikembalikan, kecuali Anda punya file cadangan.`,
       buttons: [
         { label: 'Batal', value: null, variant: 'ghost' },
         { label: 'Hapus Semua', value: 'hapus', variant: 'danger' }
@@ -798,7 +798,7 @@
     state.events = [];
     saveEvents();
     renderAll();
-    toast('Seluruh data kegiatan telah dihapus.');
+    toast('Seluruh data catatan telah dihapus.');
   }
 
   /* ---------------------------------------------------------
