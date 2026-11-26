@@ -982,6 +982,15 @@
     }
   }
 
+  /* ---------------------------------------------------------
+     17. PWA: service worker (agar bisa dipasang & dipakai offline)
+     --------------------------------------------------------- */
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch((err) => console.warn('Service worker gagal didaftarkan:', err));
+    });
+  }
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
